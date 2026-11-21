@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote Builder | Free quote and invoice maker for freelancers</title>
+<meta name="description" content="Build a clean quote or invoice in the browser: line items, discount, GST, notes. Print or save as PDF, share by link. Nothing leaves your device.">
+<meta property="og:title" content="Quote Builder | Free quote and invoice maker">
+<meta property="og:description" content="Line items, discount and tax, printed to PDF in one click. Runs in your browser.">
+<meta name="theme-color" content="#14532d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314532d'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h8' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="./"><span class="logo" aria-hidden="true"></span>Quote Builder</a>
+  <div class="actions">
+    <button class="btn ghost" id="newDoc" type="button">New</button>
+    <button class="btn ghost" id="share" type="button">Share link</button>
+    <button class="btn" id="print" type="button">Save as PDF</button>
+  </div>
+</header>
+<main class="layout">
+  <form class="editor" id="editor" autocomplete="off" aria-label="Quote details">
+    <fieldset class="seg" aria-label="Document type">
+      <label><input type="radio" name="kind" value="Quote" checked><span>Quote</span></label>
+      <label><input type="radio" name="kind" value="Invoice"><span>Invoice</span></label>
+    </fieldset>
+    <section class="card">
+      <h2>From</h2>
+      <div class="grid2">
+        <label class="f">Your name or business<input name="fromName"></label>
+        <label class="f">Email<input name="fromEmail" type="email"></label>
+        <label class="f full">Address<textarea name="fromAddr" rows="2"></textarea></label>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Bill to</h2>
+      <div class="grid2">
+        <label class="f">Client name<input name="toName"></label>
+        <label class="f">Client email<input name="toEmail" type="email"></label>
+        <label class="f full">Client address<textarea name="toAddr" rows="2"></textarea></label>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Details</h2>
+      <div class="grid3">
+        <label class="f">Number<input name="number"></label>
+        <label class="f">Date<input name="date" type="date"></label>
+        <label class="f"><span id="dueLabel">Valid until</span><input name="due" type="date"></label>
+        <label class="f">Currency<select name="currency"><option>CAD</option><option>USD</option><option>EUR</option><option>GBP</option><option>AUD</option><option>INR</option></select></label>
+        <label class="f">Tax name<input name="taxName"></label>
+        <label class="f">Tax rate %<input name="taxRate" type="number" min="0" max="100" step="0.01" inputmode="decimal"></label>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-h"><h2>Line items</h2><span class="hint">Drag the handle to reorder</span></div>
+      <div class="items-head" aria-hidden="true"><span></span><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span><span></span></div>
+      <ol class="items" id="items"></ol>
+      <button class="btn ghost add" id="addItem" type="button">+ Add line</button>
+      <div class="grid3 extras">
+        <label class="f">Discount<select name="discType"><option value="pct">Percent</option><option value="amt">Fixed amount</option></select></label>
+        <label class="f">Discount value<input name="discVal" type="number" min="0" step="0.01" inputmode="decimal"></label>
+        <label class="f">Deposit requested %<input name="deposit" type="number" min="0" max="100" step="1" inputmode="numeric"></label>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Notes and terms</h2>
+      <label class="f full">Shown at the bottom of the document<textarea name="notes" rows="3"></textarea></label>
+    </section>
+    <p class="privacy">Saved automatically in this browser only. Nothing is uploaded.</p>
+  </form>
+  <section class="preview-wrap" aria-label="Preview">
+    <div class="paper" id="paper"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<footer class="foot">Built by <a href="../">Rayhan</a> · free to use</footer>
+<script src="app.js"></script>
+</body>
+</html>

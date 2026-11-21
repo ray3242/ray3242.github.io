@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sales Insights Dashboard | CSV to interactive charts</title>
+<meta name="description" content="Upload a sales CSV and instantly get KPIs, trends, category breakdowns, filters and export. Runs 100% in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span class="mark">▲</span> Sales Insights <small id="srcName">Synthetic data: Northern Roast Co.</small></div>
+  <div class="actions">
+    <label class="btn ghost" for="file">⬆ Upload CSV</label><input id="file" type="file" accept=".csv,text/csv" hidden>
+    <button class="btn ghost" id="sample">Load sample</button>
+    <button class="btn" id="export">⬇ Export filtered</button>
+    <a class="back" href="../">Portfolio</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="filters" aria-label="Filters">
+    <label>From<input type="date" id="from"></label>
+    <label>To<input type="date" id="to"></label>
+    <label>Region<select id="fRegion"></select></label>
+    <label>Category<select id="fCat"></select></label>
+    <label>Channel<select id="fChan"></select></label>
+    <button class="link" id="reset">Reset filters</button>
+  </section>
+
+  <details class="mapping" id="mapping">
+    <summary>Column mapping <span id="mapHint"></span></summary>
+    <p>Columns are detected automatically. Adjust if your file uses different names.</p>
+    <div class="maprow" id="mapRow"></div>
+  </details>
+
+  <section class="kpis">
+    <div class="kpi"><span>Revenue</span><b id="kRev">–</b><em id="dRev"></em></div>
+    <div class="kpi"><span>Orders</span><b id="kOrd">–</b><em id="dOrd"></em></div>
+    <div class="kpi"><span>Avg order value</span><b id="kAov">–</b><em id="dAov"></em></div>
+    <div class="kpi"><span>Units sold</span><b id="kUnits">–</b><em id="dUnits"></em></div>
+  </section>
+
+  <section class="row">
+    <div class="panel big"><div class="ph"><h2>Monthly revenue</h2><span class="muted" id="trendNote"></span></div><div class="cv"><canvas id="trend"></canvas><div class="tip" id="tip"></div></div></div>
+    <div class="panel"><div class="ph"><h2>Revenue by category</h2></div><div class="cv"><canvas id="cats"></canvas></div></div>
+  </section>
+
+  <section class="row">
+    <div class="panel"><div class="ph"><h2>Revenue by region</h2></div><div id="regions" class="bars"></div></div>
+    <div class="panel big"><div class="ph"><h2>Top products</h2><span class="muted">click headers to sort</span></div>
+      <div class="tablewrap"><table id="tbl"><thead><tr><th data-k="name">Product</th><th data-k="orders">Orders</th><th data-k="units">Units</th><th data-k="revenue">Revenue</th><th data-k="share">Share</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="panel insights"><div class="ph"><h2>Auto insights</h2></div><ul id="insights"></ul></section>
+  <p class="foot">Your file is processed locally in your browser and never uploaded. Sample data is synthetic. Built by Rayhan · <a href="../">Portfolio</a></p>
+</main>
+<div class="drop" id="drop">Drop your CSV to analyze it</div>
+<script src="app.js"></script>
+</body>
+</html>
