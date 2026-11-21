@@ -1,0 +1,32 @@
+{
+ "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "photos": [
+  {
+   "file": "bathroom-desktop.jpg",
+   "files": [
+    "bathroom-desktop.jpg",
+    "bathroom-mobile.jpg"
+   ],
+   "id": "f180519881",
+   "alt": "USVI IMG 5256 - Modern white bathroom with a built-in bathtub and shower featuring neatly stacked pillows on the side",
+   "by": "Category:Government of the United States Virgin Islands",
+   "licence": "Public domain",
+   "licenceUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:USVI_IMG_5256_-_Modern_white_bathroom_with_a_built-in_bathtub_and_shower_featuring_neatly_stacked_pillows_on_the_side.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "sink-640.jpg",
+   "files": [
+    "sink-640.jpg"
+   ],
+   "id": "f156341369",
+   "alt": "Norwegian sink which is open-sided, common in older houses",
+   "by": "Ridiculopathy",
+   "licence": "CC0",
+   "licenceUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "page": "https://commons.wikimedia.org/wiki/File:Norwegian_sink_which_is_open-sided,_common_in_older_houses.jpg",
+   "source": "Wikimedia Commons"
+  }
+ ]
+}

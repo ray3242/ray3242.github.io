@@ -1,0 +1,11 @@
+{
+  "brand": "Northgate Plumbing",
+  "networks": [{"name":"northgate","front_man":"concierge","hocon":"./northgate.network.json","description":"Service answers and a local quote-request draft for Edmonton homeowners.","sample_queries":["Do you repair water heaters in St. Albert?","Help me draft a request for a leaking kitchen sink in Edmonton.","What will a drain repair cost?"]}],
+  "llm_router":{"base_url":"https://openrouter.ai/api/v1","byok_router":"https://openrouter.ai/api/v1","mock":false},
+  "peer_policy":{"mode":"open","deny_origins":[],"note":"Visitor approval is required before contacting any peer. Never include contact information in delegation."},
+  "allowed_peers":[],
+  "linking":{"protocol":"nsdeploy-link/v1","exports":[{"network":"northgate","front_man":"concierge","url":"northgate"}],"imports":["trade_partner"],"link_updates":{"mode":"browser-local"}},
+  "deployment":{"mode":"static","self_contained_runtime":true,"direct_byok":true,"browser_mock":false,"public_mcp_facade":false},
+  "actions":{"version":1,"module":"./site-actions.js","agentTools":["read_services","draft_request"]},
+  "theme":{"primary":"#181715"}
+}
