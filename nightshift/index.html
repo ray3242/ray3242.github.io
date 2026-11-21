@@ -29,6 +29,7 @@ main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;
 #feed{max-height:calc(100vh - 150px);overflow:auto;padding-right:4px}
 .shift{margin:14px 0 8px;padding:8px 12px;border-left:3px solid var(--acc);background:var(--panel2);border-radius:0 8px 8px 0;font-weight:600}
 .inc{border:1px solid var(--line);border-radius:10px;margin:8px 0;overflow:hidden}
+.inc>.h:focus-visible{outline:2px solid var(--acc,#7aa2ff);outline-offset:-2px}
 .inc>.h{display:flex;gap:10px;align-items:center;padding:8px 12px;background:var(--panel2);cursor:pointer;flex-wrap:wrap}
 .inc>.h .id{font-family:ui-monospace,monospace;color:var(--mute);font-size:12px}.inc>.h .al{flex:1;min-width:200px}
 .pill{font-size:11px;padding:2px 8px;border-radius:99px;background:#0e1427;border:1px solid var(--line);white-space:nowrap}
@@ -102,10 +103,10 @@ function handle(e){
   if(e.kind==='shift'){const d=document.createElement('div');d.className='shift';d.textContent=e.text;feed.appendChild(d);feed.scrollTop=feed.scrollHeight;return}
   if(e.kind==='score'){rows.push(e.row);score();return}
   if(e.kind==='page'){
-    document.querySelectorAll('.inc.open').forEach(x=>{if(!userOpened.has(x.dataset.id))x.classList.remove('open')});
+    document.querySelectorAll('.inc.open').forEach(x=>{if(!userOpened.has(x.dataset.id)){x.classList.remove('open');x.querySelector('.h').setAttribute('aria-expanded','false')}});
     const d=document.createElement('div');d.className='inc open';d.dataset.id=e.incident;
-    d.innerHTML=`<div class="h"><span class="id">${esc(e.incident)}</span><span class="pill">${esc(e.service)}</span><span class="al">${esc(e.text)}</span><span class="st"></span></div><div class="b"></div>`;
-    d.querySelector('.h').onclick=()=>{d.classList.toggle('open');userOpened.add(e.incident)};
+    d.innerHTML=`<div class="h" role="button" tabindex="0"><span class="id">${esc(e.incident)}</span><span class="pill">${esc(e.service)}</span><span class="al">${esc(e.text)}</span><span class="st"></span></div><div class="b"></div>`;
+    const hd=d.querySelector('.h'),tog=()=>{d.classList.toggle('open');userOpened.add(e.incident);hd.setAttribute('aria-expanded',d.classList.contains('open'))};hd.setAttribute('aria-expanded','true');hd.onclick=tog;hd.onkeydown=k=>{if(k.key==='Enter'||k.key===' '){k.preventDefault();tog()}};
     feed.appendChild(d);incs[e.incident]=d;feed.scrollTop=feed.scrollHeight;return}
   const d=incs[e.incident];if(!d)return;const b=d.querySelector('.b');
   let h=`<div class="who ${esc(e.agent)}">${esc(e.agent)}</div><div>`;
