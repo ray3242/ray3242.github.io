@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nightshift: on-call agents that remember, on Meko</title>
+<style>
+:root{--bg:#0b1020;--panel:#131a2e;--panel2:#18213a;--line:#263154;--text:#e6ebf7;--mute:#8e9bbd;--acc:#7c9cff;--ok:#3ddc97;--bad:#ff6b6b;--warn:#ffc857;--cold:#6b7696;--meko:#7c9cff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,16,32,.95);z-index:5;flex-wrap:wrap}
+h1{font-size:18px;margin:0;letter-spacing:.2px}h1 span{color:var(--acc)}
+.tag{font-size:12px;color:var(--mute)}
+.badge{font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+.badge.live{color:var(--ok);border-color:#235c46}.badge.replay{color:var(--warn);border-color:#6b5621}
+button,select{background:var(--acc);color:#081028;border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:13px}
+button.ghost,select{background:transparent;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.5;cursor:default}
+.sp{flex:1}
+main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;padding:16px 22px;max-width:1500px;margin:0 auto}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.9px;color:var(--mute);margin:0 0 10px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--panel2);border-radius:10px;padding:10px 12px}.kpi b{display:block;font-size:22px}.kpi small{color:var(--mute);font-size:11px}
+.night{margin:10px 0 14px}.night .ttl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.night .ttl em{font-style:normal;color:var(--ok);font-weight:600}.night .ttl em.neg{color:var(--warn)}
+.bar{height:16px;border-radius:5px;margin:3px 0;position:relative;background:#0e1427;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .4s}.bar.cold i{background:var(--cold)}.bar.meko i{background:var(--meko)}
+.bar span{position:absolute;left:8px;top:0;font-size:11px;line-height:16px;color:#fff;white-space:nowrap}
+.mini{font-size:12px;color:var(--mute)}
+#feed{max-height:calc(100vh - 150px);overflow:auto;padding-right:4px}
+.shift{margin:14px 0 8px;padding:8px 12px;border-left:3px solid var(--acc);background:var(--panel2);border-radius:0 8px 8px 0;font-weight:600}
+.inc{border:1px solid var(--line);border-radius:10px;margin:8px 0;overflow:hidden}
+.inc>.h{display:flex;gap:10px;align-items:center;padding:8px 12px;background:var(--panel2);cursor:pointer;flex-wrap:wrap}
+.inc>.h .id{font-family:ui-monospace,monospace;color:var(--mute);font-size:12px}.inc>.h .al{flex:1;min-width:200px}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;background:#0e1427;border:1px solid var(--line);white-space:nowrap}
+.pill.ok{color:var(--ok)}.pill.bad{color:var(--bad)}.pill.new{color:var(--warn)}.pill.reuse{color:var(--acc)}
+.inc .b{padding:6px 12px 10px;display:none}.inc.open .b{display:block}
+.ev{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:5px 0;border-top:1px dashed #1f2947}.ev:first-child{border-top:0}
+.who{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding-top:2px}
+.who.triage{color:#b28dff}.who.investigator{color:#5ec8ff}.who.fixer{color:#ffb86b}.who.scribe{color:#3ddc97}.who.pager{color:#ff8fa3}
+.ev code{font-family:ui-monospace,monospace;font-size:12px;background:#0e1427;padding:1px 6px;border-radius:5px;color:#cfe0ff}
+.ev .sub{color:var(--mute);font-size:12px;margin-top:2px}.ev .fail{color:var(--bad)}.ev .good{color:var(--ok)}
+.hit{border-left:2px solid var(--line);padding:3px 8px;margin:4px 0;font-size:12px;color:var(--mute)}.hit.used{border-color:var(--acc);color:#c9d4f3}.hit b{color:var(--text)}
+.mem{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;font-size:12px;background:var(--panel2)}
+.mem .top{display:flex;gap:8px;align-items:center;margin-bottom:3px;flex-wrap:wrap}.mem.retired{opacity:.55}.mem.retired .fx{text-decoration:line-through}
+.mem .fx{font-family:ui-monospace,monospace;color:#cfe0ff}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}th{color:var(--mute);font-weight:600}td.n{text-align:right;font-variant-numeric:tabular-nums}
+.win{color:var(--ok)}.lose{color:var(--warn)}
+.intro{color:var(--mute);font-size:13px;margin:0 0 10px}
+.err{color:var(--bad);padding:8px 0}
+a{color:var(--acc)}
+#mems{max-height:340px;overflow:auto}#tblwrap{max-height:300px;overflow:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>Night<span>shift</span></h1>
+  <span class="tag">On-call agents whose memory survives the shift change. Context layer: <b>Meko</b>.</span>
+  <span class="sp"></span>
+  <span id="mode" class="badge">connecting</span>
+  <select id="speed" title="Replay speed"><option value="1">1x</option><option value="4" selected>4x</option><option value="20">20x</option><option value="1000">instant</option></select>
+  <button id="quick" class="ghost">Run quick (4 fault types)</button>
+  <button id="run">Run three nights</button>
+</header>
+<main>
+  <section class="panel">
+    <h2>On-call feed <span id="dp" class="mini"></span></h2>
+    <p class="intro">Each night a <b>new crew</b> (Triage, Investigator, Fixer, Scribe) takes the pager. Nothing carries over between crews except what they wrote to a shared Meko datapack. Click an incident to see every decision and the memory it cited.</p>
+    <div id="err" class="err"></div>
+    <div id="feed"></div>
+  </section>
+  <section>
+    <div class="panel">
+      <h2>Same incidents, with and without shared memory</h2>
+      <div class="kpis">
+        <div class="kpi"><b id="k-save">-</b><small>tokens saved on the latest night</small></div>
+        <div class="kpi"><b id="k-fail">-</b><small>failed prod changes: no memory / Meko</small></div>
+        <div class="kpi"><b id="k-mttr">-</b><small>time to resolve saved, latest night</small></div>
+        <div class="kpi"><b id="k-mem">-</b><small>shared learnings / times reused</small></div>
+      </div>
+      <div id="nights"></div>
+      <div class="mini">Grey = an identical crew with no memory. Blue = the crew using Meko. Night 1 costs slightly more with Meko: writing things down is not free. It pays back from night 2.</div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>Shared memory in Meko (promoted, verified learnings)</h2>
+      <div id="mems"><div class="mini">Empty. Learnings appear here after a fix is verified by the alert clearing.</div></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>Incident ledger</h2>
+      <div id="tblwrap"><table><thead><tr><th>Incident</th><th>Fault</th><th class="n">Tokens no-mem</th><th class="n">Tokens Meko</th><th class="n">Failed</th><th>What memory did</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </div>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let incs={}, rows=[], mems=[], live=false, cursor=0, timer=null, replay=null, rp=0, userOpened=new Set();
+function reset(){userOpened.clear();$('dp').textContent='';incs={};rows=[];mems=[];cursor=0;rp=0;$('feed').innerHTML='';$('rows').innerHTML='';$('nights').innerHTML='';$('mems').innerHTML='<div class="mini">Empty. Learnings appear here after a fix is verified by the alert clearing.</div>';['k-save','k-fail','k-mttr','k-mem'].forEach(k=>$(k).textContent='-')}
+function fxOf(t){const m=/Fix: ([a-z_]+\([^)]*\))/.exec(t||'');return m?m[1]:''}
+function field(t,k){const m=new RegExp(k+': (.*?)\\. (?:Service|Symptom|Root cause evidence|Confirm with|Fix|Before fix|Dead ends|Replaces):').exec(t+' ');return m?m[1]:''}
+function handle(e){
+  const feed=$('feed');
+  if(e.kind==='seed'){const d=document.createElement('div');d.className='mini';d.textContent='Setup: '+e.text;feed.appendChild(d);return}
+  if(e.kind==='shift'){const d=document.createElement('div');d.className='shift';d.textContent=e.text;feed.appendChild(d);feed.scrollTop=feed.scrollHeight;return}
+  if(e.kind==='score'){rows.push(e.row);score();return}
+  if(e.kind==='page'){
+    document.querySelectorAll('.inc.open').forEach(x=>{if(!userOpened.has(x.dataset.id))x.classList.remove('open')});
+    const d=document.createElement('div');d.className='inc open';d.dataset.id=e.incident;
+    d.innerHTML=`<div class="h"><span class="id">${esc(e.incident)}</span><span class="pill">${esc(e.service)}</span><span class="al">${esc(e.text)}</span><span class="st"></span></div><div class="b"></div>`;
+    d.querySelector('.h').onclick=()=>{d.classList.toggle('open');userOpened.add(e.incident)};
+    feed.appendChild(d);incs[e.incident]=d;feed.scrollTop=feed.scrollHeight;return}
+  const d=incs[e.incident];if(!d)return;const b=d.querySelector('.b');
+  let h=`<div class="who ${esc(e.agent)}">${esc(e.agent)}</div><div>`;
+  if(e.kind==='recall'||e.kind==='preflight'){
+    h+=`${esc(e.text)} <span class="sub">(${e.tokens||0} tokens of recalled context)</span>`;
+    if(e.query)h+=`<div class="sub">Meko <code>context_search</code>: “${esc(e.query)}”</div>`;
+    (e.hits||[]).slice(0,4).forEach(x=>{h+=`<div class="hit ${x.used?'used':''}"><b>${esc(x.label||x.source)}</b> · relevance ${x.score}${x.used?'':' · below the floor, ignored'}${x.retired?' · retired by a newer learning':''}<br>${esc((x.text||'').slice(0,230))}${(x.text||'').length>230?'…':''}</div>`});
+    if((e.dead_ends||[]).length)h+=`<div class="sub">Known dead ends to skip: ${e.dead_ends.map(x=>`<code>${esc(x)}</code>`).join(' ')}</div>`;
+  }else if(e.kind==='diagnose'){
+    h+=`ran <code>${esc(e.tool)}</code> <span class="sub">(${e.tokens} tokens read, ${e.seconds}s)</span><div class="sub">${esc(e.text)}</div>`+(e.finding?`<div class="sub">Finding: ${esc(e.finding)}</div>`:'');
+  }else if(e.kind==='action'){
+    h+=`<code>${esc(e.call)}</code> <span class="${e.ok?'good':'fail'}">${e.ok?'ok':'FAILED'}</span><div class="sub">${esc(e.text)}</div><div class="sub ${e.ok?'':'fail'}">${esc(e.result)}</div>`;
+  }else if(e.kind==='resolved'||e.kind==='unresolved'){
+    h+=`<span class="${e.kind==='resolved'?'good':'fail'}">${esc(e.text)}</span> <span class="sub">${e.tokens} tokens · ${e.diagnostics} diagnostics · ${e.failed_actions} failed changes · ${Math.round(e.mttr_seconds/60*10)/10} min</span>`;
+    d.querySelector('.st').innerHTML=`<span class="pill ${e.kind==='resolved'?'ok':'bad'}">${e.kind}</span> <span class="pill">${e.tokens} tok</span>`;
+  }else if(e.kind==='learn'){
+    h+=`${esc(e.text)}<div class="hit used">${esc(e.memory)}</div>`;
+  }else if(e.kind==='promote'){
+    h+=esc(e.text)+(e.replaces?`<div class="sub">This retires the older remembered fix <code>${esc(e.replaces)}</code>.</div>`:'');
+    d.querySelector('.st').insertAdjacentHTML('beforeend',' <span class="pill new">new learning</span>');
+    const ev=[...b.querySelectorAll('.hit.used')].pop();const text=ev?ev.textContent:'';
+    if(e.replaces){mems.forEach(m=>{if(m.fix===e.replaces&&m.service===field(text,'Service'))m.retired=true})}
+    mems.push({id:e.memory_id,text,fix:fxOf(text),service:field(text,'Service'),inc:e.incident,shift:e.shift,uses:0});drawMems();
+  }else if(e.kind==='reuse'){
+    h+=esc(e.text);d.querySelector('.st').insertAdjacentHTML('beforeend',' <span class="pill reuse">reused memory</span>');
+    const lab=(e.cites||[])[0];if(lab){const m=mems.find(m=>m.id===lab.id||lab.label.includes(m.inc+' '));if(m){m.uses++;drawMems()}}
+  }else if(e.kind==='artifact'){
+    h+=`${esc(e.text)} <details><summary class="sub">postmortem</summary><pre style="white-space:pre-wrap;font-size:11px;color:#c9d4f3">${esc(e.body)}</pre></details>`;
+  }else{h+=esc(e.text)}
+  h+='</div>';const r=document.createElement('div');r.className='ev';r.innerHTML=h;b.appendChild(r);
+  const f=$('feed');f.scrollTop=f.scrollHeight;
+}
+function drawMems(){
+  $('mems').innerHTML=mems.slice().reverse().map(m=>`<div class="mem ${m.retired?'retired':''}"><div class="top"><span class="pill">${esc(m.service)}</span><span class="fx">${esc(m.fix)}</span><span class="pill">${esc(m.inc)} · shift ${esc(m.shift)}</span>${m.uses?`<span class="pill reuse">reused ${m.uses}x by other crews</span>`:''}${m.retired?'<span class="pill bad">retired: went stale</span>':''}</div><div style="color:var(--mute)">${esc(field(m.text,'Symptom'))}</div></div>`).join('');
+  $('k-mem').textContent=mems.length+' / '+mems.reduce((a,m)=>a+m.uses,0);
+}
+function score(){
+  const by={};rows.forEach(r=>{(by[r.night]=by[r.night]||{night:r.night,shift:r.shift,c:0,m:0,cf:0,mf:0,ct:0,mt:0,n:0});const s=by[r.night];s.n++;s.c+=r.cold.tokens;s.m+=r.meko.tokens;s.cf+=r.cold.failed_actions;s.mf+=r.meko.failed_actions;s.ct+=r.cold.mttr_seconds;s.mt+=r.meko.mttr_seconds});
+  const ns=Object.values(by),mx=Math.max(...ns.map(s=>Math.max(s.c,s.m)),1);
+  $('nights').innerHTML=ns.map(s=>{const p=Math.round(1000*(1-s.m/s.c))/10;return `<div class="night"><div class="ttl"><span>${esc(s.night)} · shift ${esc(s.shift)} · ${s.n} incidents</span><em class="${s.m>s.c?'neg':''}">${s.m>s.c?Math.abs(p)+'% more tokens':s.m<s.c?p+'% fewer tokens':'same tokens'}</em></div>
+  <div class="bar cold"><i style="width:${100*s.c/mx}%"></i><span>no memory: ${s.c.toLocaleString()} tokens · ${s.cf} failed changes · ${Math.round(s.ct/60)} min</span></div>
+  <div class="bar meko"><i style="width:${100*s.m/mx}%"></i><span>with Meko: ${s.m.toLocaleString()} tokens · ${s.mf} failed changes · ${Math.round(s.mt/60)} min</span></div></div>`}).join('');
+  const l=ns[ns.length-1];$('k-save').textContent=(Math.round(1000*(1-l.m/l.c))/10)+'%';$('k-fail').textContent=ns.reduce((a,s)=>a+s.cf,0)+' / '+ns.reduce((a,s)=>a+s.mf,0);$('k-mttr').textContent=Math.round(100*(1-l.mt/l.ct))+'%';
+  const r=rows[rows.length-1],m=r.meko;let what=m.reused?'reused '+m.reused.replace(/^\[\d+\] /,''):m.corrected_memory?'caught a stale fix ('+m.corrected_memory+'), corrected memory':m.learned?(m.recall_before!=null&&m.best_match>0.2?'memory pointed elsewhere; verified, then learned':'new: learned and promoted'):'-';
+  if(m.recall_after!=null&&!m.reused)what+=` (recall ${m.recall_before} → ${m.recall_after})`;
+  const cls=m.tokens<r.cold.tokens?'win':(m.tokens>r.cold.tokens?'lose':'');
+  $('rows').insertAdjacentHTML('beforeend',`<tr><td>${esc(r.incident)}</td><td>${esc(r.title)}</td><td class="n">${r.cold.tokens.toLocaleString()}</td><td class="n ${cls}">${m.tokens.toLocaleString()}</td><td class="n">${r.cold.failed_actions} / ${m.failed_actions}</td><td>${esc(what)}</td></tr>`);
+  const w=$('tblwrap');w.scrollTop=w.scrollHeight;
+}
+async function poll(){
+  try{const r=await (await fetch('/api/events?since='+cursor)).json();r.events.forEach(handle);cursor+=r.events.length;if(r.datapack)$('dp').textContent='· datapack '+r.datapack;$('err').textContent=r.error?('Error: '+r.error):'';
+    $('run').disabled=$('quick').disabled=r.running;if(r.running||r.events.length)timer=setTimeout(poll,300);else timer=null}catch(e){timer=setTimeout(poll,1000)}
+}
+async function start(quick){
+  if(live){reset();const sp=+$('speed').value;await fetch('/api/run?quick='+(quick?1:0)+'&pace='+(sp>=1000?0:(0.6/sp).toFixed(3)),{method:'POST'});clearTimeout(timer);poll()}
+  else{reset();clearTimeout(timer);play()}
+}
+function play(){
+  if(!replay)return;const sp=+$('speed').value;let n=sp>=1000?replay.events.length:1;
+  while(n-->0&&rp<replay.events.length)handle(replay.events[rp++]);
+  if(rp<replay.events.length){const k=replay.events[rp].kind;timer=setTimeout(play,(k==='score'||k==='seed'?30:520)/(+$('speed').value))}
+}
+(async()=>{
+  const qs=new URLSearchParams(location.search).get('speed');if(qs)$('speed').value=qs;
+  try{const s=await (await fetch('/api/state')).json();live=!!s.live;}catch(e){live=false}
+  if(live){$('mode').textContent='live · writing to Meko';$('mode').className='badge live';poll()}
+  else{$('mode').textContent='recorded run (replay)';$('mode').className='badge replay';$('quick').style.display='none';$('run').textContent='Replay three nights';
+    replay=await (await fetch('replay.json')).json();$('dp').textContent='· recorded '+(replay.generated_at||'')+' against '+(replay.meko_url||'Meko');play()}
+  $('run').onclick=()=>start(false);$('quick').onclick=()=>start(true);
+})();
+</script>
+</body>
+</html>
