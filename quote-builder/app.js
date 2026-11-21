@@ -10,7 +10,7 @@ const blank = () => ({...example(),toName:'',toAddr:'',number:'',notes:'',deposi
 let doc = load();
 
 function load(){
-  try{if(location.hash.length>1){const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));history.replaceState(null,'',location.pathname);const m={...example(),...d};try{localStorage.setItem(KEY,JSON.stringify(m))}catch(e){}return m}}catch(e){}
+  try{if(location.hash.length>1){const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));history.replaceState(null,'',location.pathname);const m={...example(),...d};m.items=Array.isArray(m.items)?m.items.map(it=>({d:String(it?.d??''),q:n(it?.q),r:n(it?.r)})):[];try{localStorage.setItem(KEY,JSON.stringify(m))}catch(e){}return m}}catch(e){}
   try{const s=localStorage.getItem(KEY);if(s)return{...example(),...JSON.parse(s)}}catch(e){}
   return example();
 }
@@ -29,8 +29,8 @@ function renderItems(){
   list.innerHTML=doc.items.map((it,i)=>`<li class="item" data-i="${i}" draggable="false">
     <button class="handle" type="button" aria-label="Move line ${i+1}" title="Drag to reorder, or use arrow keys"><svg width="10" height="16" viewBox="0 0 10 16" aria-hidden="true"><g fill="currentColor"><circle cx="2" cy="3" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="2" cy="13" r="1.5"/><circle cx="8" cy="13" r="1.5"/></g></svg></button>
     <input class="desc" data-k="d" value="${esc(it.d)}" aria-label="Description, line ${i+1}" placeholder="What you will deliver">
-    <input class="qty" data-k="q" type="number" min="0" step="any" inputmode="decimal" value="${it.q}" aria-label="Quantity, line ${i+1}">
-    <input class="rate" data-k="r" type="number" min="0" step="0.01" inputmode="decimal" value="${it.r}" aria-label="Rate, line ${i+1}">
+    <input class="qty" data-k="q" type="number" min="0" step="any" inputmode="decimal" value="${esc(it.q)}" aria-label="Quantity, line ${i+1}">
+    <input class="rate" data-k="r" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(it.r)}" aria-label="Rate, line ${i+1}">
     <span class="amt">${fmt(n(it.q)*n(it.r))}</span>
     <button class="del" type="button" aria-label="Remove line ${i+1}" ${doc.items.length<2?'disabled':''}>×</button></li>`).join('');
 }
