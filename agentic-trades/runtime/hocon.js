@@ -185,6 +185,7 @@ class HoconParser {
       this.i++;
     }
     const raw = this.s.slice(start, this.i).trim();
+    if (!raw) throw this.error("expected a value");
     return coerceScalar(raw);
   }
 
