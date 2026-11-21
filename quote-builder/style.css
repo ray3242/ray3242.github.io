@@ -70,3 +70,5 @@ table.lines{width:100%;border-collapse:collapse;margin-top:6px}
  .item .handle{grid-area:h}.item .desc{grid-area:d}.item .qty{grid-area:q}.item .rate{grid-area:r}.item .amt{grid-area:a;align-self:center}.item .del{grid-area:x}
  .parties{grid-template-columns:1fr}.doc-h{flex-direction:column}.doc-meta{text-align:left}}
 @media print{@page{margin:14mm}body{background:#fff}.top,.editor,.foot,.toast{display:none!important}.layout{display:block;padding:0}.preview-wrap{position:static}.paper{box-shadow:none;padding:0;aspect-ratio:auto;overflow:visible;animation:none}}
+.lines th:nth-child(n+2),.lines td:nth-child(n+2){padding-left:10px;white-space:nowrap;width:1%}
+@media (max-width:640px){.lines th:nth-child(n+2),.lines td:nth-child(n+2){font-size:11px;padding-left:8px}.lines td:first-child{padding-right:4px}}
