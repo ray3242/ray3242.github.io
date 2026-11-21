@@ -17,13 +17,17 @@ function parseCSV(text){
   row.push(f);if(row.some(v=>v!==''))out.push(row);return out;
 }
 function guess(){map={};const low=headers.map(h=>h.trim().toLowerCase().replace(/\s+/g,'_'));
-  for(const[k,al]of Object.entries(FIELDS)){const i=low.findIndex(h=>al.includes(h));map[k]=i>=0?i:-1}}
+  for(const[k,al]of Object.entries(FIELDS)){let i=low.findIndex(h=>al.includes(h));if(i<0)i=low.findIndex(h=>al.some(a=>a.length>2&&h.split('_').includes(a)));map[k]=i>=0&&!Object.values(map).includes(i)?i:-1}}
 function parseDate(v){if(!v)return null;const d=new Date(v.length===10?v+'T00:00:00':v);return isNaN(d)?null:d}
 const toNum = v => {const n=parseFloat(String(v??'').replace(/[^0-9.\-]/g,''));return isNaN(n)?0:n};
 function build(){
   const g=(r,k)=>map[k]>=0?r[map[k]]:'';
   rows=raw.map(r=>{const units=map.units>=0?toNum(g(r,'units')):1;const rev=map.revenue>=0?toNum(g(r,'revenue')):units*toNum(g(r,'unit_price'));
     return{date:parseDate(g(r,'date')),region:g(r,'region')||'Unassigned',category:g(r,'category')||'Unassigned',product:g(r,'product')||'Unnamed',channel:g(r,'channel')||'Unassigned',units,rev,id:g(r,'order_id')}}).filter(r=>r.date);
+  if(!rows.length){['#from','#to'].forEach(q=>{$(q).value='';$(q).min=$(q).max=''});['#fRegion','#fCat','#fChan'].forEach(q=>$(q).innerHTML='<option value="">All</option>');
+    ['#kRev','#kOrd','#kAov','#kUnits'].forEach(q=>$(q).textContent='–');document.querySelectorAll('.kpis em').forEach(e=>{e.textContent='';e.className=''});
+    ['#trend','#cats'].forEach(q=>{const[x,w,h]=ctx($(q));x.clearRect(0,0,w,h)});$('#regions').innerHTML='';$('#tbl tbody').innerHTML='';window.__view=[];
+    $('#mapHint').textContent='· check: '+LABELS.date;renderMap();return}
   const ds=rows.map(r=>+r.date);const min=new Date(Math.min(...ds)),max=new Date(Math.max(...ds));
   $('#from').value=iso(min);$('#to').value=iso(max);$('#from').min=$('#to').min=iso(min);$('#from').max=$('#to').max=iso(max);
   fill('#fRegion','region','All regions');fill('#fCat','category','All categories');fill('#fChan','channel','All channels');
@@ -96,7 +100,7 @@ $('#trend').addEventListener('mouseleave',()=>$('#tip').style.opacity=0);
 const PAL=['#2dd4bf','#fbbf24','#60a5fa','#f87171','#34d399','#fb923c','#e5e7eb','#94a3b8'];
 function drawDonut(cats,total){
   const c=$('#cats'),[x,w,h]=ctx(c);x.clearRect(0,0,w,h);if(!total)return;
-  const R=Math.min(h/2-8,w/4),cx=R+12,cy=h/2;let a=-Math.PI/2;
+  x.font='13px Inter, system-ui, sans-serif';const lw=Math.max(...cats.slice(0,8).map(k=>x.measureText(`${k.name}  100.0%`).width));const R=Math.max(36,Math.min(h/2-8,w/4,(w-lw-62)/2)),cx=R+12,cy=h/2;let a=-Math.PI/2;
   cats.forEach((k,i)=>{const s=k.rev/total*Math.PI*2;x.beginPath();x.arc(cx,cy,R,a,a+s);x.arc(cx,cy,R*.62,a+s,a,true);x.closePath();x.fillStyle=PAL[i%PAL.length];x.fill();a+=s});
   x.fillStyle=css('--text');x.textAlign='center';x.font='600 15px Inter, system-ui, sans-serif';x.fillText(short(total),cx,cy+5);
   x.textAlign='left';x.font='13px Inter, system-ui, sans-serif';const lx=cx+R+24;
