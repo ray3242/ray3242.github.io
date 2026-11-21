@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en" data-type="software" data-radius="sharp" data-buttons="solid" data-motion>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Qbodrop: bank CSV and Excel to QuickBooks QBO converter</title>
+<meta name="description" content="Drop in a bank statement as CSV or Excel and download a .qbo or .ofx file QuickBooks imports. It runs in your browser, so the statement never leaves your computer.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Qbodrop: bank CSV and Excel to QuickBooks QBO converter">
+<meta property="og:description" content="Turn a bank CSV or Excel export into a QuickBooks .qbo file in your browser.">
+<meta property="og:image" content="share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0c0a08">
+<link rel="canonical" href="https://ray3242.github.io/qbodrop/">
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<style>
+:root {
+  --p-bg: #0c0a08; --p-surface: #181512; --p-ink: #ffffff; --p-muted: #8f8a84;
+  --p-accent: #c9a45a; --p-accent-ink: #0c0a08; --p-action: #c9a45a; --p-action-ink: #0c0a08;
+  --p-inv-bg: #ffffff; --p-inv-surface: #ebebeb; --p-inv-ink: #0c0a08; --p-inv-muted: #5c5b59;
+  --p-inv-accent: #0c0a08; --p-inv-accent-ink: #ffffff; --p-inv-action: #0c0a08; --p-inv-action-ink: #ffffff;
+  --font-display: "Geist", system-ui, sans-serif;
+  --font-text: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.035em;
+  --display-tracking-xl: -0.045em;
+}
+</style>
+<link rel="stylesheet" href="assets/moments/word-highlight/moment.css">
+<link rel="stylesheet" href="app.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/word-highlight/moment.js">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">Skip to content</a>
+    <a class="nav__logo" href="#top">Qbodrop</a>
+    <nav class="nav__links" aria-label="Main">
+      <div class="nav__item"><a class="nav__link" href="#convert">Converter</a></div>
+      <div class="nav__item"><a class="nav__link" href="#steps">How it works</a></div>
+      <div class="nav__item"><a class="nav__link" href="#pricing">Pricing</a></div>
+      <div class="nav__item"><a class="nav__link" href="#questions">Questions</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--primary" href="#convert">Convert a statement</a>
+    </div>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero hero--centred" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__c">
+        <h1 id="hero-h">Bank statement in, QuickBooks file out</h1>
+        <p class="hero__lead">Drop in the CSV or Excel export from your bank and download a .qbo file QuickBooks imports. It runs in your browser, so the statement never leaves your computer.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="#convert">Convert a statement<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="#convert" data-try-sample>Try the sample file</a></div>
+      </div>
+      <div class="hero__window" role="img" aria-label="Qbodrop showing an October bank statement of 19 transactions ready to download as a QBO file">
+        <div class="ly-piece qd-win" aria-hidden="true">
+          <div class="qd-win__bar"><b>october-statement.csv</b><span class="hide-sm">19 transactions · 2 Oct to 30 Oct 2026</span><span class="sp"></span><span class="qd-tag qd-tag--on">QBO</span><span class="qd-tag">OFX</span></div>
+          <table class="qd-table">
+            <thead><tr><th>Date</th><th>Description</th><th class="num hide-sm">Money out</th><th class="num hide-sm">Money in</th><th class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr><td class="date">2026-10-02</td><td>STRIPE PAYOUT ST-K4P9</td><td class="num hide-sm"></td><td class="num hide-sm">2,316.40</td><td class="num in">+2,316.40</td></tr>
+              <tr><td class="date">2026-10-03</td><td>RENT - 118 AVE HOLDINGS</td><td class="num hide-sm">1,850.00</td><td class="num hide-sm"></td><td class="num">-1,850.00</td></tr>
+              <tr><td class="date">2026-10-05</td><td>SHELL 4471 EDMONTON AB</td><td class="num hide-sm">74.12</td><td class="num hide-sm"></td><td class="num">-74.12</td></tr>
+              <tr><td class="date">2026-10-06</td><td>INTERAC E-TRANSFER FROM M. OKAFOR</td><td class="num hide-sm"></td><td class="num hide-sm">480.00</td><td class="num in">+480.00</td></tr>
+              <tr><td class="date">2026-10-08</td><td>ADOBE *CREATIVE CLOUD</td><td class="num hide-sm">82.99</td><td class="num hide-sm"></td><td class="num">-82.99</td></tr>
+              <tr><td class="date">2026-10-09</td><td>CHEQUE 0214</td><td class="num hide-sm">640.00</td><td class="num hide-sm"></td><td class="num">-640.00</td></tr>
+              <tr><td class="date">2026-10-12</td><td>COSTCO WHOLESALE W155</td><td class="num hide-sm">212.87</td><td class="num hide-sm"></td><td class="num">-212.87</td></tr>
+              <tr><td class="date">2026-10-14</td><td>PAYROLL - 3 EMPLOYEES</td><td class="num hide-sm">4,210.66</td><td class="num hide-sm"></td><td class="num">-4,210.66</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="convert" aria-labelledby="convert-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="convert-h">Convert a statement. <span class="muted">Check every row before you download.</span></h2>
+      </div>
+      <div class="qd-win" id="app">
+        <div class="qd-win__bar"><b id="qd-name">No file yet</b><span class="hide-sm" id="qd-sub">CSV, TXT, XLSX or XLS</span><span class="sp"></span><button class="qd-linkbtn" type="button" id="qd-reset" hidden>Start over</button></div>
+        <div id="qd-empty">
+          <div class="qd-drop" id="qd-drop" role="button" tabindex="0" aria-describedby="qd-drop-help">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M18 24V7M11 14l7-7 7 7M6 24v5h24v-5"/></svg>
+            <h3>Drop your bank export here</h3>
+            <p id="qd-drop-help">Or click to choose a file. CSV, TXT, XLSX and XLS work. The file is read on this page and is not uploaded.</p>
+            <span class="btn btn--primary">Choose a file</span>
+          </div>
+          <input type="file" id="qd-file" accept=".csv,.txt,.tsv,.xlsx,.xls,text/csv" hidden aria-label="Bank statement file">
+          <p class="qd-error" id="qd-error" role="alert" hidden></p>
+          <div class="qd-foot"><p>No export to hand? <button class="qd-linkbtn" type="button" data-try-sample>Load the sample statement</button> and see a finished file.</p></div>
+        </div>
+        <div id="qd-loaded" hidden>
+          <dl class="qd-stats">
+            <div><dt>Transactions</dt><dd id="st-count">0</dd></div>
+            <div><dt>Dates</dt><dd id="st-range"></dd></div>
+            <div><dt>Money in</dt><dd id="st-in"></dd></div>
+            <div><dt>Money out</dt><dd id="st-out"></dd></div>
+          </dl>
+          <div class="qd-body">
+            <form class="qd-side" id="qd-form" onsubmit="return false">
+              <fieldset><legend>Columns</legend>
+                <label class="qd-f"><span>Date</span><select id="m-date" data-map="date"></select></label>
+                <label class="qd-f"><span>Description</span><select id="m-description" data-map="description"></select></label>
+                <label class="qd-f"><span>Amount</span><select id="m-amount" data-map="amount"></select></label>
+                <label class="qd-f"><span>Money out</span><select id="m-debit" data-map="debit"></select></label>
+                <label class="qd-f"><span>Money in</span><select id="m-credit" data-map="credit"></select></label>
+                <label class="qd-f"><span>Memo</span><select id="m-memo" data-map="memo"></select></label>
+                <label class="qd-f"><span>Date order</span><select id="o-order"><option value="MDY">Month first (10/31)</option><option value="DMY">Day first (31/10)</option></select></label>
+                <label class="qd-check"><input type="checkbox" id="o-flip"> Flip the signs (card exports that list charges as positive)</label>
+              </fieldset>
+              <fieldset><legend>Account</legend>
+                <label class="qd-f"><span>Type</span><select id="o-type"><option value="CHECKING">Chequing</option><option value="SAVINGS">Savings</option><option value="CREDITCARD">Credit card</option></select></label>
+                <label class="qd-f"><span>Account no.</span><input type="text" id="o-acct" value="0000" maxlength="22" inputmode="numeric" autocomplete="off"></label>
+                <label class="qd-f"><span>Currency</span><select id="o-cur"><option>USD</option><option>CAD</option><option>GBP</option><option>EUR</option><option>AUD</option></select></label>
+                <label class="qd-f"><span>Bank in QuickBooks</span><select id="o-bid"><option value="3000">Wells Fargo (3000)</option><option value="10898">Chase (10898)</option><option value="custom">Another bank ID</option></select></label>
+                <label class="qd-f" id="o-bid-custom-row" hidden><span>Bank ID</span><input type="text" id="o-bid-custom" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="INTU.BID number"></label>
+              </fieldset>
+              <fieldset><legend>File type</legend>
+                <div class="qd-seg"><label><input type="radio" name="fmt" value="qbo" checked>.QBO</label><label><input type="radio" name="fmt" value="ofx">.OFX</label></div>
+              </fieldset>
+            </form>
+            <div class="qd-main">
+              <div class="qd-scroll" tabindex="0" role="region" aria-label="Transactions found in the file">
+                <table class="qd-table"><thead><tr><th>Date</th><th>Description</th><th class="hide-sm">Memo</th><th class="num">Amount</th></tr></thead><tbody id="qd-rows"></tbody></table>
+              </div>
+              <p class="qd-note" id="qd-note" hidden></p>
+            </div>
+          </div>
+          <div class="qd-key" id="qd-key" hidden>
+            <label for="k-input">Licence key</label>
+            <input type="text" id="k-input" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
+            <button class="btn btn--secondary" type="button" id="k-apply">Unlock</button>
+            <a class="btn btn--primary" id="k-buy" href="#pricing" target="_blank" rel="noopener">Buy a key</a>
+            <p role="status" id="k-status"></p>
+          </div>
+          <div class="qd-foot">
+            <p id="qd-foot-note"></p><span class="sp"></span>
+            <button class="btn btn--primary" type="button" id="qd-download">Download .qbo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="steps" aria-labelledby="steps-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="steps-h">From bank export to QuickBooks in 3 steps. <span class="muted">About a minute a statement.</span></h2>
+      </div>
+      <div class="grid">
+        <article class="card card--row span-4 step-card">
+          <span class="step-num">1</span>
+          <h3>Export from your bank</h3>
+          <p>Download the month as CSV or Excel from online banking. Any column layout works.</p>
+          <div class="steps-panel" aria-hidden="true"><span>Date,Description,Withdrawals,Deposits</span><span><b>10/03/2026</b>,RENT - 118 AVE,<b>"1,850.00"</b>,</span><span><b>10/15/2026</b>,STRIPE PAYOUT,,<b>"3,902.15"</b></span></div>
+        </article>
+        <article class="card card--row span-4 step-card">
+          <span class="step-num">2</span>
+          <h3>Check the rows</h3>
+          <p>Qbodrop finds the date, description and amount columns. Change one if it guessed wrong.</p>
+          <div class="steps-panel" aria-hidden="true"><span>Date <i>→</i> <b>column 1, month first</b></span><span>Money out <i>→</i> <b>Withdrawals</b></span><span>Money in <i>→</i> <b>Deposits</b></span><span>19 rows read, 1 skipped</span></div>
+        </article>
+        <article class="card card--row span-4 step-card">
+          <span class="step-num">3</span>
+          <h3>Import the .qbo file</h3>
+          <p>In QuickBooks, open Banking, choose Upload from file and pick the download.</p>
+          <div class="steps-panel" aria-hidden="true"><span>&lt;STMTTRN&gt;</span><span>&lt;TRNTYPE&gt;<b>DEBIT</b></span><span>&lt;DTPOSTED&gt;<b>20261003</b></span><span>&lt;TRNAMT&gt;<i>-1850.00</i></span><span>&lt;NAME&gt;<b>RENT - 118 AVE HOLDINGS</b></span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section statement" id="private" data-moment="word-highlight" aria-label="Privacy">
+    <div class="wrap">
+      <p class="t-label">Privacy</p>
+      <p class="mo-wh__text">A bank statement is not something to hand to a website. Qbodrop reads your file on this page, builds the QuickBooks file on this page and saves it to your downloads. Nothing is uploaded, so there is <strong>nothing to leak</strong>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="pricing" aria-labelledby="pricing-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <h2 id="pricing-h">Pricing</h2>
+          <p class="muted">Pay once, not every month. Both plans read CSV and Excel, write .qbo and .ofx, and keep your file on your computer.</p>
+          <p><a class="link" href="#questions">Read the questions</a></p>
+        </div>
+        <article class="card card--plan span-4 start-5">
+          <h3>Free</h3>
+          <p class="muted">For a look at your own statement</p>
+          <p class="price"><span class="t-stat">$0</span></p>
+          <a class="btn btn--secondary" href="#convert">Convert a statement</a>
+          <ul class="checks">
+            <li><span data-free-line>The first 10 transactions of each file</span></li>
+            <li>Every row shown before you download</li>
+            <li>Chequing, savings and credit card accounts</li>
+            <li>No account and no email</li>
+          </ul>
+        </article>
+        <article class="card card--plan is-featured span-4 start-9">
+          <h3>Full</h3>
+          <p class="muted">For bookkeepers and month-end</p>
+          <p class="price"><span class="t-stat" data-price>$29</span><span class="muted">once</span></p>
+          <a class="btn btn--primary" href="#convert" data-buy>Convert a statement</a>
+          <ul class="checks">
+            <li>Whole statements, any number of rows</li>
+            <li>As many files and clients as you like</li>
+            <li>One licence key, entered once per browser</li>
+            <li data-plan-note>Open to everyone during the launch preview</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="questions" aria-labelledby="questions-h">
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <h2 id="questions-h">Questions</h2>
+          <p class="muted">What people ask before they convert a first statement.</p>
+        </div>
+        <div class="faq span-7 start-6">
+          <div class="faq__item"><h3>Is my statement uploaded anywhere?</h3><p>No. The file is read and converted by your browser. You can load the page, switch off your internet and it still converts.</p></div>
+          <div class="faq__item"><h3>Which QuickBooks versions take the file?</h3><p>QuickBooks Online and QuickBooks Desktop both import .qbo files through Banking, Upload from file. Xero, Sage, Wave and other software that reads OFX take the .ofx file.</p></div>
+          <div class="faq__item"><h3>What does "Bank in QuickBooks" mean?</h3><p>QuickBooks Desktop only accepts a .qbo file that names a bank it knows. The default works for any bank's transactions. If you know your own bank's ID you can enter it.</p></div>
+          <div class="faq__item"><h3>Will importing twice create duplicates?</h3><p>No. Each transaction gets an ID built from its date, amount and description, so QuickBooks recognises one it has already imported.</p></div>
+          <div class="faq__item"><h3>My bank has separate debit and credit columns. Does that work?</h3><p>Yes. Qbodrop reads one signed amount column or separate money in and money out columns, and brackets, trailing minus signs, DR and CR marks, and European decimals.</p></div>
+          <div class="faq__item"><h3>Can it read a PDF statement?</h3><p>Not yet. Download the CSV or Excel export from online banking instead; nearly every bank offers one next to the PDF.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing footer--dark" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--type">
+      <div class="section-head">
+        <h2 id="close-h">Convert this month's statement</h2>
+        <p data-free-foot>Free for the first 10 transactions of a file. No account.</p>
+      </div>
+      <a class="btn btn--primary btn--xl btn--wide" href="#convert">Convert a statement<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-4 stack-4">
+          <a class="nav__logo" href="#top">Qbodrop</a>
+          <p class="footer__lede">Bank CSV and Excel exports turned into QuickBooks files, in your browser.</p>
+        </div>
+        <div class="span-2 start-7 footer__col"><h3>Product</h3><ul><li><a href="#convert">Converter</a></li><li><a href="#steps">How it works</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Buying</h3><ul><li><a href="#pricing">Pricing</a></li><li><a href="#questions">Questions</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Files</h3><ul><li><a href="samples/sample-statement.csv" download>Sample statement</a></li><li><a href="#private">Privacy</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 Qbodrop. Not affiliated with Intuit. QuickBooks is a trademark of Intuit Inc.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
+<script src="config.js"></script>
+<script src="converter.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
