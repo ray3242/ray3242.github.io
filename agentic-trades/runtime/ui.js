@@ -8,7 +8,6 @@
 
 import { ChatMessageType } from "./kernel.js";
 import {
-  canUseByokCookie,
   deleteByokProfile,
   getSelectedByokProfile,
   guessByokProfileName,
@@ -1136,9 +1135,7 @@ export function mountApp(root, { engine, trace, manifest, connect = null }) {
   OpenRouterConnect.refreshKeyLink(keyEl, openRouterKeyEl);
   profileNameEl.value = selectedProfile?.name || "";
 
-  const profileStorageText = canUseByokCookie()
-    ? "Saved setups are kept in this browser and mirrored to a local cookie, so they follow nsDeploy across localhost ports."
-    : "Saved setups are kept in this browser for this site.";
+  const profileStorageText = "Saved setups are kept in this browser's local storage for this site. Keys are never stored in cookies.";
 
   const profileLabel = (p) => `${p.name || guessByokProfileName(p)}${p.model ? ` (${p.model})` : ""}`;
   const refreshProfileOptions = (selectedId = profileStore.selectedId) => {

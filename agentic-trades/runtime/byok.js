@@ -1,9 +1,7 @@
 // byok.js - persistent browser-side BYOK profile storage.
 //
-// Keys never go in URLs. Profiles are stored in localStorage, and on loopback
-// hosts only we mirror them to a host cookie so settings follow nsDeploy across
-// localhost/127.0.0.1 ports. Do not enable cookie mirroring for non-local hosts:
-// cookies are sent to the serving host on every request. The setup applied in a
+// Keys never go in URLs or cookies. Profiles are stored in localStorage.
+// The setup applied in a
 // tab is also kept in that tab's sessionStorage, so other tabs cannot change it.
 
 import { normalizeModelName } from "./model.js";
@@ -16,16 +14,13 @@ const LOOSE_KEY_ITEM = "nsweb-byok-key";
 const TAB_ROUTER_ITEM = "nsweb-byok-router";
 const TAB_MODEL_ITEM = "nsweb-byok-model";
 const VERSION = 1;
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
-const COOKIE_VALUE_LIMIT = 3800;
 const MAX_PROFILES = 12;
 
 const emptyStore = () => ({ version: VERSION, selectedId: "", updatedAt: "", profiles: [] });
 
 export function loadByokStore() {
-  const local = readLocalStore();
-  const cookie = readCookieStore();
-  return newerStore(local, cookie) || emptyStore();
+  clearLegacyCookie();
+  return readLocalStore() || emptyStore();
 }
 
 export function getSelectedByokProfile(store = loadByokStore()) {
@@ -106,12 +101,6 @@ export function portableByokRouter(router) {
   return value;
 }
 
-export function canUseByokCookie() {
-  if (typeof location === "undefined") return false;
-  const host = location.hostname;
-  return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
-}
-
 // Keep the key, router and model of the setup applied in this tab. Router and
 // model are stored even when empty, so the tab never takes them from another
 // setup. A null setup clears the tab's copy, and the saved profile applies again.
@@ -170,36 +159,17 @@ export function loadTabByokSetup(savedProfile = getSelectedByokProfile()) {
 function saveByokStore(store) {
   const normalized = normalizeStore(store);
   try { localStorage.setItem(STORE_KEY, JSON.stringify(normalized)); } catch {}
-  writeCookieStore(normalized);
+  clearLegacyCookie();
 }
 
 function readLocalStore() {
   try { return normalizeStore(JSON.parse(localStorage.getItem(STORE_KEY) || "null")); } catch { return null; }
 }
 
-function readCookieStore() {
-  if (!canUseByokCookie() || typeof document === "undefined") return null;
-  const prefix = `${COOKIE_NAME}=`;
-  const part = document.cookie.split("; ").find((c) => c.startsWith(prefix));
-  if (!part) return null;
-  try { return normalizeStore(JSON.parse(decodeURIComponent(part.slice(prefix.length)))); } catch { return null; }
-}
-
-function writeCookieStore(store) {
-  if (!canUseByokCookie() || typeof document === "undefined") return;
-  const value = encodeURIComponent(JSON.stringify(store));
-  const attrs = `Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
-  if (value.length <= COOKIE_VALUE_LIMIT) {
-    document.cookie = `${COOKIE_NAME}=${value}; ${attrs}`;
-  } else {
+function clearLegacyCookie() {
+  try {
     document.cookie = `${COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
-  }
-}
-
-function newerStore(a, b) {
-  if (!a) return b;
-  if (!b) return a;
-  return String(b.updatedAt || "") > String(a.updatedAt || "") ? b : a;
+  } catch {}
 }
 
 function normalizeStore(raw) {
