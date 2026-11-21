@@ -279,9 +279,18 @@ export class Engine {
     if (!["http:", "https:"].includes(parsed.protocol)) {
       throw new Error("Linked network URLs must use http or https.");
     }
-    const requested = parsed.pathname.endsWith("/") ? "" : parsed.pathname.split("/").filter(Boolean).pop() || "";
-    const origin = (requested ? new URL("./", parsed).href : `${parsed.origin}${parsed.pathname}`).replace(/\/$/, "");
-    const { manifest } = await fetchManifest(origin);
+    let requested = parsed.pathname.endsWith("/") ? "" : parsed.pathname.split("/").filter(Boolean).pop() || "";
+    const directory = !requested || !requested.includes(".");
+    let origin = (directory ? `${parsed.origin}${parsed.pathname}` : new URL("./", parsed).href).replace(/\/$/, "");
+    let manifest;
+    try {
+      ({ manifest } = await fetchManifest(origin));
+      if (directory) requested = "";
+    } catch (error) {
+      if (!directory || !requested || error.status !== 404) throw error;
+      origin = new URL("./", parsed).href.replace(/\/$/, "");
+      ({ manifest } = await fetchManifest(origin));
+    }
     const networks = manifest.networks || [];
     const norm = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
     let entry = requested ? networks.find((item) => item.name === requested) : null;

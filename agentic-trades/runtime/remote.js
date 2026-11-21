@@ -7,7 +7,11 @@ export async function fetchManifest(originUrl) {
   const base = originUrl.replace(/\/$/, "");
   const url = `${base}/agent-manifest.json`;
   const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`manifest fetch ${resp.status} for ${url}`);
+  if (!resp.ok) {
+    const error = new Error(`manifest fetch ${resp.status} for ${url}`);
+    error.status = resp.status;
+    throw error;
+  }
   const manifest = await resp.json();
   return { manifest, base, url };
 }
