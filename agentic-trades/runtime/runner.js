@@ -572,7 +572,7 @@ export async function runAgentManual(ctx, agentName, userText, parentSpan, chain
     // network cannot raise it.
     const maxSteps = Math.min(spec.max_steps || network.config.max_steps || 12, ctx.maxSteps || Infinity);
 
-    let finalText = "";
+    let finalText = "Step limit reached before I could finish this request. Please narrow your question and try again. Any completed actions may already have taken effect; review them before retrying.";
     for (let step = 0; step < maxSteps; step++) {
       if (isTopFrontMan) {
         applyPendingSteering(ctx.turnControl, (text) => messages.push({ role: "user", content: text }));
