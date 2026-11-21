@@ -93,10 +93,10 @@
     let s = String(v).trim(); if (!s) return null;
     let neg = false;
     if (/^\(.*\)$/.test(s)) { neg = true; s = s.slice(1, -1); }
-    if (/\b(DR|DB)\.?$/i.test(s)) neg = true;
-    s = s.replace(/\b(CR|DR|DB)\.?$/i, '').replace(/[A-Za-z$€£¥₹\s\u00a0']/g, '');
-    if (/-$/.test(s)) { neg = !neg; s = s.slice(0, -1); }
-    if (/^-/.test(s)) { neg = !neg; s = s.slice(1); }
+    if (/\d\s*(DR|DB)\.?$/i.test(s)) neg = true;
+    s = s.replace(/(CR|DR|DB)\.?$/i, '').replace(/[A-Za-z$€£¥₹\s\u00a0']/g, '');
+    if (/-$/.test(s)) { neg = true; s = s.slice(0, -1); }
+    if (/^-/.test(s)) { neg = true; s = s.slice(1); }
     if (/^\+/.test(s)) s = s.slice(1);
     if (!/^[\d.,]+$/.test(s) || !/\d/.test(s)) return null;
     const lastC = s.lastIndexOf(','), lastD = s.lastIndexOf('.');

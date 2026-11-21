@@ -92,6 +92,7 @@
   function sheetRows(buf) {
     const X = window.XLSX, wb = X.read(buf, { type: 'array', cellNF: true });
     let best = [];
+    const date1904 = !!(wb.Workbook && wb.Workbook.WBProps && wb.Workbook.WBProps.date1904);
     for (const name of wb.SheetNames) {
       const ws = wb.Sheets[name]; if (!ws['!ref']) continue;
       const r = X.utils.decode_range(ws['!ref']), rows = [];
@@ -100,7 +101,7 @@
         for (let Cc = r.s.c; Cc <= r.e.c; Cc++) {
           const cell = ws[X.utils.encode_cell({ r: R, c: Cc })];
           if (!cell || cell.v == null) row.push('');
-          else if (cell.t === 'n' && cell.z && X.SSF.is_date(cell.z)) row.push(X.SSF.format('yyyy-mm-dd', cell.v));
+          else if (cell.t === 'n' && cell.z && X.SSF.is_date(cell.z)) row.push(X.SSF.format('yyyy-mm-dd', cell.v, { date1904 }));
           else if (cell.t === 'n') row.push(String(Math.round(cell.v * 1e6) / 1e6));
           else if (cell.t === 'd') row.push(cell.v.toISOString().slice(0, 10));
           else row.push(String(cell.w != null && cell.t !== 's' ? cell.w : cell.v).trim());
@@ -134,6 +135,7 @@
   }
   function reset() {
     state = null;
+    $('o-cur').selectedIndex = 0; $('o-acct').value = $('o-acct').defaultValue;
     $('qd-empty').hidden = false; $('qd-loaded').hidden = true; $('qd-reset').hidden = true;
     $('qd-name').textContent = 'No file yet'; $('qd-sub').textContent = 'CSV, TXT, XLSX or XLS';
     drop.focus();

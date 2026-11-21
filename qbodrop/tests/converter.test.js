@@ -6,6 +6,7 @@ const eq = assert.deepStrictEqual;
 eq(C.parseAmount('1,234.56'), 1234.56); eq(C.parseAmount('(1,234.56)'), -1234.56); eq(C.parseAmount('-$12.00'), -12);
 eq(C.parseAmount('1.234,56'), 1234.56); eq(C.parseAmount('12,50'), 12.5); eq(C.parseAmount('1,234'), 1234);
 eq(C.parseAmount('45.10 DR'), -45.1); eq(C.parseAmount('45.10CR'), 45.1); eq(C.parseAmount('12.00-'), -12);
+eq(C.parseAmount('50.00DR'), -50); eq(C.parseAmount('-50.00 DR'), -50); eq(C.parseAmount('50.00 CR'), 50);
 eq(C.parseAmount(''), null); eq(C.parseAmount('abc'), null); eq(C.parseAmount('€ 1 200,00'), 1200);
 // dates
 eq(C.parseDate('2026-10-05'), { y: 2026, m: 10, d: 5 }); eq(C.parseDate('10/05/2026', 'MDY'), { y: 2026, m: 10, d: 5 });
