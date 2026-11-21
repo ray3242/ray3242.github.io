@@ -17,7 +17,7 @@ function parseCSV(text){
   row.push(f);if(row.some(v=>v!==''))out.push(row);return out;
 }
 function guess(){map={};const low=headers.map(h=>h.trim().toLowerCase().replace(/\s+/g,'_'));
-  for(const[k,al]of Object.entries(FIELDS)){let i=low.findIndex(h=>al.includes(h));if(i<0)i=low.findIndex(h=>al.includes(h.split('_').at(-1)));map[k]=i>=0&&!Object.values(map).includes(i)?i:-1}}
+  for(const[k,al]of Object.entries(FIELDS)){let i=low.findIndex(h=>al.includes(h));if(i<0)i=low.findIndex(h=>{const w=h.split('_').at(-1);return al.includes(w)&&!['id','name','type','order','count','item','total'].includes(w)});map[k]=i>=0&&!Object.values(map).includes(i)?i:-1}}
 function parseDate(v){if(!v)return null;const d=new Date(v.length===10?v+'T00:00:00':v);return isNaN(d)?null:d}
 const toNum = v => {const n=parseFloat(String(v??'').replace(/[^0-9.\-]/g,''));return isNaN(n)?0:n};
 function build(){
