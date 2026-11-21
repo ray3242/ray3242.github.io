@@ -35,7 +35,7 @@ function build(){
   $('#mapHint').textContent=missing.length?`· check: ${missing.map(k=>LABELS[k]).join(', ')}`:`· ${Object.values(map).filter(i=>i>=0).length} of ${Object.keys(FIELDS).length} matched`;
   renderMap();render();
 }
-const iso = d => d.toISOString().slice(0,10);
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 function fill(sel,key,all){const vals=[...new Set(rows.map(r=>r[key]))].sort();$(sel).innerHTML=`<option value="">${all}</option>`+vals.map(v=>`<option>${esc(v)}</option>`).join('')}
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function renderMap(){$('#mapRow').innerHTML=Object.keys(FIELDS).map(k=>`<label>${LABELS[k]}<select data-k="${k}"><option value="-1">Not in file</option>${headers.map((h,i)=>`<option value="${i}" ${map[k]===i?'selected':''}>${esc(h)}</option>`).join('')}</select></label>`).join('');}
@@ -54,7 +54,7 @@ function render(){
   const t=totals(cur),p=totals(prev);
   $('#kRev').textContent=money(t.rev);$('#kOrd').textContent=num(t.ord);$('#kAov').textContent=money(t.aov);$('#kUnits').textContent=num(t.units);
   delta($('#dRev'),t.rev,p.rev);delta($('#dOrd'),t.ord,p.ord);delta($('#dAov'),t.aov,p.aov);delta($('#dUnits'),t.units,p.units);
-  const months=group(cur,x=>x.date.toISOString().slice(0,7)).sort((a,b)=>a.name<b.name?-1:1);
+  const months=group(cur,x=>iso(x.date).slice(0,7)).sort((a,b)=>a.name<b.name?-1:1);
   drawTrend(months);
   const cats=group(cur,'category').sort((a,b)=>b.rev-a.rev);drawDonut(cats,t.rev);
   const regs=group(cur,'region').sort((a,b)=>b.rev-a.rev),top=regs[0]?.rev||1;
