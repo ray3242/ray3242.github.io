@@ -149,7 +149,7 @@ function tabs() {
 
 /* every FAQ answer open, for good: a <details> in .faq is opened and its summary no longer closes it */
 function faq() {
-  document.querySelectorAll('.faq details').forEach(d => {
+  document.querySelectorAll('.faq details:not([name])').forEach(d => {
     d.open = true;
     d.addEventListener('toggle', () => { if (!d.open) d.open = true; });
     const s = d.querySelector(':scope > summary');
