@@ -17,7 +17,7 @@ function load(){
 const save = () => {try{localStorage.setItem(KEY,JSON.stringify(doc))}catch(e){}};
 const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt = n => {try{return new Intl.NumberFormat('en-CA',{style:'currency',currency:doc.currency}).format(n||0)}catch(e){return(n||0).toFixed(2)}};
-const n = v => {const x=parseFloat(v);return isFinite(x)?x:0};
+function n(v){const x=parseFloat(v);return isFinite(x)?x:0}
 const dateStr = d => d?new Date(d+'T00:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}):'';
 
 function fillForm(){
