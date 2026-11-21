@@ -140,7 +140,7 @@ export class ActionBridgeClient {
 }
 
 export async function registerRemoteActions(registry, scope, manifest) {
-  if (!manifest.actions) return;
+  if (!manifest.actions?.bridge) return;
   if (manifest.actions.version !== 1) throw new Error("Unsupported action protocol.");
   const url = sameOriginAsset(scope.base, manifest.actions.bridge);
   registry.remoteLoads ||= new Map();
