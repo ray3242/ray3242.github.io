@@ -81,3 +81,4 @@ main > .section { height: auto; }
 main > .section > .wrap { height: auto; }
 main > .section { min-height: 0; }
 #private .wrap { justify-content: center; gap: var(--s-5); }
+#st-range { white-space: normal; font-size: 15px; line-height: 1.35; }

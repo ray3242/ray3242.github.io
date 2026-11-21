@@ -9,7 +9,8 @@
 
   /* pricing copy follows the config */
   document.querySelectorAll('[data-price]').forEach(e => { e.textContent = CFG.price; });
-  document.querySelectorAll('[data-free-line]').forEach(e => { e.textContent = 'The first ' + CFG.freeRows + ' transactions of each file'; });
+  document.querySelectorAll('[data-free-line]').forEach(e => { e.textContent = paid ? 'The first ' + CFG.freeRows + ' transactions of each file' : 'Every transaction while Qbodrop is in preview'; });
+  document.querySelectorAll('[data-free-foot]').forEach(e => { e.textContent = paid ? 'Free for the first ' + CFG.freeRows + ' transactions of a file. No account.' : 'Free while in preview. No account.'; });
   if (paid) {
     document.querySelectorAll('[data-buy]').forEach(a => { a.href = CFG.gumroadUrl; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Buy the full version'; });
     document.querySelectorAll('[data-plan-note]').forEach(e => { e.textContent = 'Key delivered by email at checkout'; });
