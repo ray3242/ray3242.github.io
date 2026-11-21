@@ -38,19 +38,6 @@ function sameRouter(left, right) {
   }
 }
 
-export async function isPublishedMockRouter(router, fetchImpl = fetch) {
-  try {
-    const url = new URL(router);
-    const response = await fetchImpl(`${url.origin}/agent-manifest.json`, { cache: "no-store" });
-    if (!response.ok) return false;
-    const manifest = await response.json();
-    const declared = manifest?.llm_router || {};
-    return declared.mock === true && sameRouter(router, declared.base_url);
-  } catch {
-    return false;
-  }
-}
-
 export function selectTopRouter(manifest, routerOverride, byokKey, modelOverride = "") {
   const declared = manifest?.llm_router || {};
   const hasRealKey = !!(byokKey && byokKey !== "demo");
@@ -159,12 +146,13 @@ export class Engine {
       const hasRealKey = !!(this.byokKey && this.byokKey !== "demo");
       if ((hasConfiguredModel || hasRealKey) && this.routerOverride
           && !sameRouter(this.routerOverride, manifest.llm_router?.base_url)
-          && await isPublishedMockRouter(this.routerOverride)) {
+          && manifest.llm_router?.mock_router
+          && sameRouter(this.routerOverride, manifest.llm_router.mock_router)) {
         const oldRouter = this.routerOverride;
         this.routerOverride = manifest.llm_router?.byok_router || "";
         this.trace.note("router_correction", {
           origin: hostOf(base), from: oldRouter, to: this.routerOverride,
-          reason: "saved router is another nsDeploy site's published mock endpoint",
+          reason: "saved router is this site's declared mock endpoint",
         });
       }
       const { network, bundleUrl, integrity, llm, validation: v } = await this._compile(base, manifest, entry, { isTop: true });
