@@ -10,7 +10,7 @@ const blank = () => ({...example(),toName:'',toAddr:'',number:'',notes:'',deposi
 let doc = load();
 
 function load(){
-  try{if(location.hash.length>1){const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));history.replaceState(null,'',location.pathname);return{...example(),...d}}}catch(e){}
+  try{if(location.hash.length>1){const d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(1)))));history.replaceState(null,'',location.pathname);const m={...example(),...d};try{localStorage.setItem(KEY,JSON.stringify(m))}catch(e){}return m}}catch(e){}
   try{const s=localStorage.getItem(KEY);if(s)return{...example(),...JSON.parse(s)}}catch(e){}
   return example();
 }
