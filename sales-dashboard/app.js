@@ -49,7 +49,7 @@ function group(list,key){const m=new Map();for(const x of list){const k=typeof k
 
 function render(){
   if(!rows.length)return;
-  const from=parseDate($('#from').value),to=parseDate($('#to').value);to.setHours(23,59,59);
+  if(!rows.length)return;const from=parseDate($('#from').value||$('#from').min),to=parseDate($('#to').value||$('#to').max);to.setHours(23,59,59,999);
   const cur=filtered(from,to),span=to-from,prev=filtered(new Date(+from-span-1),new Date(+from-1));
   const t=totals(cur),p=totals(prev);
   $('#kRev').textContent=money(t.rev);$('#kOrd').textContent=num(t.ord);$('#kAov').textContent=money(t.aov);$('#kUnits').textContent=num(t.units);
